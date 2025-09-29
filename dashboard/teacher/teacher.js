@@ -43,7 +43,7 @@ function updateTeacherInfo(teacherInfo) {
     document.getElementById('teacherName').textContent = teacherInfo.full_name;
     const avatarImg = document.getElementById('teacherAvatar');
     if (avatarImg) {
-        avatarImg.src = teacherInfo.profile_image ? `${UPLOAD_DIR_REL}/${teacherInfo.profile_image}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(teacherInfo.full_name)}&background=random`;
+        avatarImg.src = teacherInfo.profile_image ? \`${UPLOAD_DIR_REL}/${teacherInfo.profile_image}` : \`https://ui-avatars.com/api/?name=${encodeURIComponent(teacherInfo.full_name)}&background=random`;
     }
 }
 
@@ -54,7 +54,7 @@ function updateStatsCards(stats) {
     document.getElementById('totalClasses').textContent = stats.total_classes;
     document.getElementById('totalStudents').textContent = stats.total_students_assigned;
     document.getElementById('todayClasses').textContent = stats.today_classes_count;
-    document.getElementById('attendanceRate').textContent = `${stats.average_attendance_rate}%`;
+    document.getElementById('attendanceRate').textContent = \`${stats.average_attendance_rate}%`;
 }
 
 /**
@@ -207,7 +207,7 @@ function formatTime(timeString) {
     const ampm = hour >= 12 ? 'PM' : 'AM';
     hour = hour % 12;
     hour = hour ? hour : 12; // Convert 0 to 12
-    return `${hour}:${minutes} ${ampm}`;
+    return \`${hour}:${minutes} ${ampm}`;
 }
 
 /**
@@ -251,7 +251,7 @@ function showToast(message, type = 'info') {
     }
 
     const toast = document.createElement('div');
-    toast.className = `p-4 rounded-lg shadow-lg text-white font-medium transition-all duration-300 transform translate-y-full opacity-0
+    toast.className = \`p-4 rounded-lg shadow-lg text-white font-medium transition-all duration-300 transform translate-y-full opacity-0
         ${type === 'success' ? 'bg-green-500' :
           type === 'error' ? 'bg-red-500' :
           type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'}`;
