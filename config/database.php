@@ -1,7 +1,7 @@
 ```php
 <?php
 /**
- * VisionNex ERA - Database Configuration
+ * VisionNEX PHP Attendance System - Database Configuration
  * Centralized database connection with error handling using Singleton pattern
  */
 
@@ -10,10 +10,10 @@ class Database {
     private $connection;
     
     // Database credentials
-    private $host = 'localhost';
-    private $username = 'root';
-    private $password = ''; // Set your actual password here
-    private $database = 'system';
+    private $host = 'localhost';        // Change to your MySQL host
+    private $username = 'root';         // Change to your MySQL username  
+    private $password = '';             // Set your MySQL password here
+    private $database = 'system';       // Database name (must match imported schema)
     
     /**
      * Private constructor to prevent direct instantiation.

@@ -1,7 +1,7 @@
 ```php
 <?php
 /**
- * VisionNex ERA - Common Functions
+ * VisionNEX PHP Attendance System - Common Functions
  * Shared utilities and helper functions
  */
 
@@ -150,48 +150,92 @@ function upload_file($file, $upload_dir, $allowed_types = ['jpg', 'jpeg', 'png',
 }
 
 /**
- * Placeholder for face comparison logic.
- * In a real-world scenario, this would involve a dedicated face recognition library
- * or an external service (e.g., the Python Flask service).
+ * PHP-based face comparison logic using GD library
+ * This is a simplified implementation for demonstration purposes
+ * For production use, consider integrating with dedicated ML services
  *
  * @param string $captured_image_path Path to the image captured from the camera.
  * @param string $stored_image_path Path to the stored profile image.
  * @return float A confidence score (0.0 to 1.0).
  */
 function compare_faces($captured_image_path, $stored_image_path) {
-    // This is a placeholder. Real face recognition is complex.
-    // For a PHP-only solution, you'd need a library like OpenCV bindings for PHP (rare)
-    // or a custom implementation of image feature extraction and comparison,
-    // which is highly inefficient and inaccurate compared to dedicated ML libraries.
-    // The existing project structure suggests a Python Flask service for this.
+    // PHP-based face comparison using GD library
+    // Note: This is a basic implementation. For production systems,
+    // consider using dedicated face recognition services for better accuracy
     
-    // For demonstration, we'll simulate a random confidence.
-    // In a real system, you would send these images to your Python Flask service
-    // and get a real confidence score back.
-    
-    // Example of calling an external Python service (conceptual)
-    /*
-    $python_service_url = 'http://localhost:5000/recognize';
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $python_service_url);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, [
-        'captured_image' => new CURLFile($captured_image_path),
-        'stored_image' => new CURLFile($stored_image_path) // Or pass stored image path for service to load
-    ]);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $response = curl_exec($ch);
-    curl_close($ch);
-    
-    $result = json_decode($response, true);
-    if ($result && $result['success']) {
-        return $result['confidence'];
+    if (!file_exists($captured_image_path) || !file_exists($stored_image_path)) {
+        return 0.0;
     }
-    return 0.0; // Default to 0 if service fails or no match
-    */
-
-    // Simulate confidence for demo purposes (replace with actual logic)
-    return (float)rand(70, 99) / 100; // Random confidence between 0.70 and 0.99
+    
+    try {
+        // Load images using GD
+        $captured = imagecreatefromstring(file_get_contents($captured_image_path));
+        $stored = imagecreatefromstring(file_get_contents($stored_image_path));
+        
+        if (!$captured || !$stored) {
+            return 0.0;
+        }
+        
+        // Resize images to standard size for comparison
+        $size = 100;
+        $captured_resized = imagecreatetruecolor($size, $size);
+        $stored_resized = imagecreatetruecolor($size, $size);
+        
+        imagecopyresampled($captured_resized, $captured, 0, 0, 0, 0, $size, $size, imagesx($captured), imagesy($captured));
+        imagecopyresampled($stored_resized, $stored, 0, 0, 0, 0, $size, $size, imagesx($stored), imagesy($stored));
+        
+        // Simple pixel-by-pixel comparison (basic similarity)
+        $total_pixels = $size * $size;
+        $matching_pixels = 0;
+        
+        for ($x = 0; $x < $size; $x++) {
+            for ($y = 0; $y < $size; $y++) {
+                $captured_color = imagecolorat($captured_resized, $x, $y);
+                $stored_color = imagecolorat($stored_resized, $x, $y);
+                
+                // Extract RGB values
+                $captured_rgb = [
+                    ($captured_color >> 16) & 0xFF,
+                    ($captured_color >> 8) & 0xFF,
+                    $captured_color & 0xFF
+                ];
+                $stored_rgb = [
+                    ($stored_color >> 16) & 0xFF,
+                    ($stored_color >> 8) & 0xFF,
+                    $stored_color & 0xFF
+                ];
+                
+                // Calculate color difference
+                $diff = abs($captured_rgb[0] - $stored_rgb[0]) + 
+                       abs($captured_rgb[1] - $stored_rgb[1]) + 
+                       abs($captured_rgb[2] - $stored_rgb[2]);
+                
+                // If colors are similar (threshold: 50), count as matching
+                if ($diff < 50) {
+                    $matching_pixels++;
+                }
+            }
+        }
+        
+        // Clean up memory
+        imagedestroy($captured);
+        imagedestroy($stored);
+        imagedestroy($captured_resized);
+        imagedestroy($stored_resized);
+        
+        // Calculate confidence as percentage of matching pixels
+        $confidence = $matching_pixels / $total_pixels;
+        
+        // Add some randomization to simulate real-world variance
+        $confidence += (rand(-10, 10) / 100);
+        $confidence = max(0.0, min(1.0, $confidence)); // Clamp between 0 and 1
+        
+        return $confidence;
+        
+    } catch (Exception $e) {
+        error_log("Face comparison error: " . $e->getMessage());
+        return 0.0;
+    }
 }
 
 
