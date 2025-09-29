@@ -1,52 +1,104 @@
+```php
 <?php
-require_once "config/db.php"; // DB connection
-session_start();
+require_once "config/config.php"; // Includes db.php and functions.php
+// secure_session_start() is called in config.php
 
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $email    = trim($_POST["email"] ?? '');
+    $email    = sanitize_input($_POST["email"] ?? '');
     $password = $_POST["password"] ?? '';
 
+    // Basic input validation
     if (empty($email) || empty($password)) {
         $error = "⚠ Email and Password are required!";
     } else {
-        // column name fixed to full_name
-        $stmt = $conn->prepare(
-            "SELECT id, full_name, email, password, role FROM users WHERE email = ? LIMIT 1"
-        );
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        // Account lockout logic (simple session-based)
+        $failed_attempts_key = 'failed_attempts_' . $email;
+        $last_attempt_time_key = 'last_attempt_time_' . $email;
+        $lockout_duration = 300; // 5 minutes lockout
+        $max_attempts = 5;
 
-        if ($result->num_rows === 1) {
-            $user = $result->fetch_assoc();
-
-            if (password_verify($password, $user['password'])) {
-                // ✅ Set session variables
-                $_SESSION['user_id']  = $user['id'];
-                $_SESSION['username'] = $user['full_name'];
-                $_SESSION['email']    = $user['email'];
-                $_SESSION['role']     = $user['role'];
-
-                // ✅ Redirect by role
-                if ($user['role'] === 'admin') {
-                    header("Location: admin-dashboard/settings.php");
-                } elseif ($user['role'] === 'teacher') {
-                    header("Location: teacher-dashboard/dashboard.php");
-                } else {
-                    header("Location: student-dashboard/dashboard.php");
-                }
-                exit;
+        if (isset($_SESSION[$failed_attempts_key]) && $_SESSION[$failed_attempts_key] >= $max_attempts) {
+            if (isset($_SESSION[$last_attempt_time_key]) && (time() - $_SESSION[$last_attempt_time_key] < $lockout_duration)) {
+                $remaining_time = $lockout_duration - (time() - $_SESSION[$last_attempt_time_key]);
+                $error = "Account locked. Please try again in " . $remaining_time . " seconds.";
+                log_activity(null, 'Login Attempt - Locked', "Email: $email, IP: " . ($_SERVER['REMOTE_ADDR'] ?? 'N/A'));
+                show_toast($error, 'error');
+                goto end_login_process; // Skip further processing
             } else {
-                $error = "Invalid password.";
+                // Lockout expired, reset attempts
+                $_SESSION[$failed_attempts_key] = 0;
+                unset($_SESSION[$last_attempt_time_key]);
             }
-        } else {
-            $error = "User not found.";
         }
-        $stmt->close();
+
+        $conn = $db->getConnection();
+        $stmt = $conn->prepare(
+            "SELECT id, full_name, email, password, role, profile_image FROM users WHERE email = ? LIMIT 1"
+        );
+        
+        if ($stmt) {
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result->num_rows === 1) {
+                $user = $result->fetch_assoc();
+
+                if (password_verify($password, $user['password'])) {
+                    // Reset failed attempts on successful login
+                    unset($_SESSION[$failed_attempts_key]);
+                    unset($_SESSION[$last_attempt_time_key]);
+
+                    // Set session variables
+                    $_SESSION['user_id']  = $user['id'];
+                    $_SESSION['username'] = $user['full_name'];
+                    $_SESSION['email']    = $user['email'];
+                    $_SESSION['role']     = $user['role'];
+                    $_SESSION['profile_image'] = $user['profile_image']; // Store profile image path
+
+                    log_activity($user['id'], 'Login Success', "User: {$user['email']}, Role: {$user['role']}");
+                    show_toast('Login successful!', 'success');
+
+                    // Redirect by role
+                    switch ($user['role']) {
+                        case 'admin':
+                            header("Location: dashboard/admin/admin-dashboard.php");
+                            break;
+                        case 'teacher':
+                            header("Location: dashboard/teacher/index.php");
+                            break;
+                        case 'student':
+                            header("Location: dashboard/student/dashboard.php");
+                            break;
+                        default:
+                            header("Location: /"); // Fallback to homepage
+                            break;
+                    }
+                    exit;
+                } else {
+                    $error = "Invalid password.";
+                    // Increment failed attempts
+                    $_SESSION[$failed_attempts_key] = ($_SESSION[$failed_attempts_key] ?? 0) + 1;
+                    $_SESSION[$last_attempt_time_key] = time();
+                    log_activity(null, 'Login Attempt - Failed Password', "Email: $email, IP: " . ($_SERVER['REMOTE_ADDR'] ?? 'N/A'));
+                }
+            } else {
+                $error = "User not found.";
+                // Increment failed attempts even for non-existent users to prevent enumeration
+                $_SESSION[$failed_attempts_key] = ($_SESSION[$failed_attempts_key] ?? 0) + 1;
+                $_SESSION[$last_attempt_time_key] = time();
+                log_activity(null, 'Login Attempt - User Not Found', "Email: $email, IP: " . ($_SERVER['REMOTE_ADDR'] ?? 'N/A'));
+            }
+            $stmt->close();
+        } else {
+            $error = "Database error during login. Please try again.";
+            error_log("Login prepare statement failed: " . $conn->error);
+        }
     }
-    $conn->close();
+    end_login_process:; // Label for goto
+    show_toast($error, 'error');
 }
 ?>
 <!DOCTYPE html>
@@ -163,5 +215,8 @@ body::before {
   </div>
 
 </div>
+<div id="toast-container"></div>
+<?php display_toast_from_session(); ?>
 </body>
 </html>
+```

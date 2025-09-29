@@ -1,6 +1,11 @@
+```php
 <?php
 $pageTitle = "Admin Dashboard";
-require_once __DIR__ . '/../../public/config/db.php';
+require_once __DIR__ . '/../../public/config/config.php'; // Includes db.php and functions.php
+check_auth('admin'); // Ensure only admins can access
+
+// Get current user's profile image for sidebar
+$user_profile_image = $_SESSION['profile_image'] ?? 'https://ui-avatars.com/api/?name=' . urlencode($_SESSION['username']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -44,7 +49,7 @@ tailwind.config = {
 </head>
 
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
-<?php include_once '../components/sidebar.php'; ?>
+<?php include_once __DIR__ . '/../components/sidebar.php'; ?>
 
 <div class="md:ml-64 transition-all duration-300">
   <div class="container px-4 py-6 space-y-10">
@@ -128,7 +133,8 @@ tailwind.config = {
 
   </div>
 </div>
-
+<div id="toast-container"></div>
+<?php display_toast_from_session(); ?>
 <script>
 $(function(){
   // Quick Stats
@@ -174,8 +180,8 @@ $(function(){
   $.get("./api/get-charts.php", function(data){
     if(data.enrollment.datasets){
       data.enrollment.datasets.forEach(ds => {
-        ds.borderColor = pastel;
-        ds.backgroundColor = pastel;
+        ds.borderColor = pastel; // This will apply the whole array as one color, needs adjustment for multiple lines
+        ds.backgroundColor = pastel; // Same here
       });
       enrollmentChart.data = data.enrollment;
       enrollmentChart.update();
@@ -192,3 +198,4 @@ $(function(){
 </script>
 </body>
 </html>
+```
