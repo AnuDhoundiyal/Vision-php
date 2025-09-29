@@ -1,0 +1,138 @@
+/* Responsive Styles for VisionNex ERA */
+
+/* Base Mobile Styles (up to 767px) */
+@media (max-width: 767px) {
+  /* Header & Navigation */
+  .header-container {
+    padding: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .logo {
+    flex: 1;
+  }
+  
+  .nav-menu {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    margin-top: 1rem;
+  }
+  
+  .nav-menu.active {
+    display: flex;
+  }
+  
+  .nav-link {
+    padding: 0.75rem 0;
+    width: 100%;
+    text-align: left;
+  }
+  
+  .dropdown-content {
+    position: static;
+    box-shadow: none;
+    width: 100%;
+    padding-left: 1rem;
+  }
+  
+  .mobile-menu-toggle {
+    display: block;
+  }
+  
+  /* Hero Section */
+  .hero {
+    padding: 3rem 1rem;
+  }
+  
+  .hero-content {
+    text-align: center;
+  }
+  
+  .hero-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .hero-buttons .btn {
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+  
+  /* Features Section */
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  /* Forms */
+  .auth-container {
+    flex-direction: column;
+  }
+  
+  .auth-form-container, 
+  .auth-image {
+    width: 100%;
+  }
+  
+  .auth-image {
+    display: none;
+  }
+  
+  /* Footer */
+  .footer-container {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .footer-brand, 
+  .footer-links, 
+  .footer-contact {
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+  
+  .social-links {
+    justify-content: center;
+  }
+}
+
+/* Tablet Styles (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Header & Navigation */
+  .header-container {
+    padding: 1rem 2rem;
+  }
+  
+  /* Features Section */
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  /* Footer */
+  .footer-container {
+    flex-wrap: wrap;
+  }
+  
+  .footer-brand {
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+  
+  .footer-links, 
+  .footer-contact {
+    width: 48%;
+  }
+}
+
+/* Large Desktop Styles (1024px and up) */
+@media (min-width: 1024px) {
+  .mobile-menu-toggle {
+    display: none;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}

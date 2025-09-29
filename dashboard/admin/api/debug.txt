@@ -1,0 +1,8 @@
+Array
+(
+    [course_id] => 2
+    [teacher_id] => 5
+    [day] => Wednesday
+    [time] => 12:30-01:00
+    [room] => 202
+)

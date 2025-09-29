@@ -1,0 +1,86 @@
+VisionNex Kiosk - Quick Setup & Run Guide
+1. Prerequisites
+
+Make sure your system has:
+
+XAMPP (PHP 8.x + MySQL + Apache)
+
+Modern browser (Chrome recommended)
+
+Camera for face recognition
+
+2. Folder Setup
+
+Copy the project to your local server:
+
+C:\xampp\htdocs\php_project_copy\
+
+
+Folder structure must remain exactly the same:
+
+php_project_copy/
+├─ attendance_project/
+│  ├─ backend_php/api/
+│  │     ├─ face_recognition.php
+│  │     └─ classes.php
+│  └─ kiosk/
+│        └─ kiosk.js
+├─ dashboard/uploads/students/
+├─ dashboard/admin/uploads/teachers/
+├─ public/config/db.php
+
+
+Do NOT rename folders or files — API paths depend on these.
+
+3. Database Setup
+
+Open phpmyadmin in browser.
+
+Create a database (e.g., attendance_system).
+
+Import your existing database dump (students, teachers, classes, attendance).
+
+Update public/config/db.php with correct database name and credentials.
+
+4. Running the Kiosk
+
+Start Apache and MySQL in XAMPP.
+
+Open kiosk page in browser:
+
+http://localhost/php_project_copy/attendance_project/kiosk/kiosk.html
+
+
+Allow camera access.
+
+Click Start Camera.
+
+System auto-detects faces (if auto-capture is enabled) or click Capture manually.
+
+5. Moving/Editing on Another Device
+
+Copy entire folder to new htdocs location.
+
+Import database into local MySQL.
+
+Update db.php if credentials differ.
+
+Start XAMPP, open kiosk page, allow camera.
+
+Do NOT rename folders/files or open kiosk as file:// — always use localhost.
+
+6. Quick Commands / Tips
+
+Start Apache & MySQL: XAMPP Control Panel
+
+Check API: Open http://localhost/php_project_copy/attendance_project/backend_php/api/face_recognition.php?action=faces
+
+Clear stats/settings: Clear localStorage in browser console
+
+Restart camera: Click Stop Camera → Start Camera
+
+7. Common Issues
+Problem	Fix
+API Offline / 404	Check folder structure and API file paths
+Recognition Failed	Ensure database has correct images & data
+Camera not working	Allow camera in browser; ensure no other apps are using it

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500">
+  <!-- Background -->
+  <rect width="500" height="500" fill="#f8f9fa" opacity="0" />
+  
+  <!-- Decorative Elements -->
+  <circle cx="250" cy="250" r="200" fill="none" stroke="#6366f1" stroke-width="2" stroke-dasharray="10 5" opacity="0.3" />
+  <circle cx="250" cy="250" r="150" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-dasharray="10 5" opacity="0.4" />
+  
+  <!-- Document/Form -->
+  <rect x="150" y="100" width="200" height="250" rx="10" ry="10" fill="#ffffff" stroke="#e5e7eb" stroke-width="2" />
+  
+  <!-- Form Lines -->
+  <line x1="180" y1="150" x2="320" y2="150" stroke="#e5e7eb" stroke-width="2" />
+  <line x1="180" y1="190" x2="320" y2="190" stroke="#e5e7eb" stroke-width="2" />
+  <line x1="180" y1="230" x2="320" y2="230" stroke="#e5e7eb" stroke-width="2" />
+  <line x1="180" y1="270" x2="320" y2="270" stroke="#e5e7eb" stroke-width="2" />
+  
+  <!-- Checkmark/Success Icon -->
+  <circle cx="250" cy="350" r="30" fill="#10b981" />
+  <path d="M235 350 L245 360 L265 340" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+  
+  <!-- Person Icon -->
+  <circle cx="250" cy="80" r="20" fill="#6366f1" />
+  <path d="M230 120 C230 100, 270 100, 270 120" fill="#6366f1" />
+  
+  <!-- Decorative Dots -->
+  <g fill="#8b5cf6">
+    <circle cx="100" cy="100" r="5" opacity="0.5" />
+    <circle cx="400" cy="100" r="5" opacity="0.5" />
+    <circle cx="100" cy="400" r="5" opacity="0.5" />
+    <circle cx="400" cy="400" r="5" opacity="0.5" />
+  </g>
+  
+  <!-- Abstract Shapes -->
+  <path d="M50 200 Q100 150, 150 200 T250 200" fill="none" stroke="#6366f1" stroke-width="2" opacity="0.3" />
+  <path d="M250 400 Q300 350, 350 400 T450 400" fill="none" stroke="#8b5cf6" stroke-width="2" opacity="0.3" />
+</svg>
